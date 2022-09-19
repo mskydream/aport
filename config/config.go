@@ -3,8 +3,13 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	DatabaseSource string `mapstructure:"dbSource"`
-	Port           string `mapstructure:"port"`
+	DB   Database `mapstructure:"db"`
+	Port string   `mapstructure:"port"`
+}
+
+type Database struct {
+	ServerURL      string `mapstructure:"serverURL"`
+	MaxConnections int    `mapstruccture:"maxConnections"`
 }
 
 func LoadConfig() (config Config, err error) {

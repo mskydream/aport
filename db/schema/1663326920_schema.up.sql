@@ -11,4 +11,10 @@ CREATE TABLE IF NOT EXISTS user_profile(
     password                TEXT                                                NOT NULL,
     created_at              TIMESTAMP                                           NOT NULL
 );
+
+CREATE TABLE todo(
+    id          serial       not null unique,
+    title       varchar(255) not null,
+    description varchar(255)
+);
 COMMIT;

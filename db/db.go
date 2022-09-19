@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -10,26 +12,30 @@ import (
 	"github.com/mskydream/aport/config"
 )
 
-type DB struct {
-	Conn *sqlx.DB
-}
+func PostgreSQLConnection(c *config.Config) (*sqlx.DB, error) {
 
-func (d *DB) InitDatabase(c *config.Config) *DB {
-	var err error
-	if d.Conn, err = sqlx.Connect("pgx", c.DatabaseSource); err != nil {
-		panic(err)
+	db, err := sqlx.Connect("pgx", c.DB.ServerURL)
+	if err != nil {
+		return nil, fmt.Errorf("error, not connected to database, %w", err)
 	}
 
-	m, err := migrate.New("file://db/schema", c.DatabaseSource)
+	db.SetMaxOpenConns(c.DB.MaxConnections)
+
+	m, err := migrate.New("file://db/schema", c.DB.ServerURL)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("error, not connected to schema, %w", err)
 	}
 
 	if err = m.Up(); err != nil {
 		if err.Error() != "no change" {
-			panic(err)
+			return nil, fmt.Errorf("error, cannot the up schema, %w", err)
 		}
 	}
 
-	return d
+	if err = db.Ping(); err != nil {
+		defer db.Close()
+		return nil, fmt.Errorf("error, not sent ping to database, %w", err)
+	}
+
+	return db, nil
 }
