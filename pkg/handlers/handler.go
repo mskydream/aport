@@ -11,7 +11,6 @@ type Handler struct {
 
 func NewHandler(serv *services.Service) *Handler {
 	return &Handler{serv: serv}
-
 }
 
 func (h *Handler) InitApi(app *fiber.App) {
