@@ -6,7 +6,7 @@ import (
 )
 
 type Auth interface {
-	SignUp(user *models.UserProfile) (int, error)
+	SignUp(user *models.UserProfile) (models.UserProfile, error)
 }
 
 type Service struct {
